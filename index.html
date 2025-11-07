@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" href="src/icon.jpg">
+
+    <title>កម្មវិធីគណនា BMI</title>
+    
+    <style>
+        body {
+            font-family: 'Khmer OS Battambang', Arial, sans-serif;
+            background-color: #e9ecef;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #20c997;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Form Styles */
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result Styles */
+        .result-card h2 {
+            color: #20c997;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        #bmi-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        #status-text {
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        #advice-text {
+            margin-top: 15px;
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>កម្មវិធីគណនា BMI (សន្ទស្សន៍ទម្ងន់ខ្លួន) សម្រាប់វិស័យសុខាភិបាល </h1>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>បញ្ចូលព័ត៌មានរបស់អ្នក</h2>
+            <form id="bmi-form">
+                <label for="height">កម្ពស់ (ម៉ែត្រ):</label>
+                <input type="number" id="height" step="0.01" placeholder="ឧទាហរណ៍: 1.70" required>
+
+                <label for="weight">ទម្ងន់ (គីឡូក្រាម):</label>
+                <input type="number" id="weight" step="0.1" placeholder="ឧទាហរណ៍: 65" required>
+                
+                <label for="age">អាយុ:</label>
+                <input type="number" id="age" min="1" placeholder="ឧទាហរណ៍: 30" required>
+
+                <button type="submit">គណនា BMI</button>
+            </form>
+        </div>
+
+        <div class="card result-card" id="result-card">
+            <h2>លទ្ធផលរបស់អ្នក</h2>
+            <p id="bmi-value">BMI: -</p> 
+            <p id="status-text">ស្ថានភាព: -</p>
+            <p id="advice-text">ការណែនាំ: -</p>
+        </div>
+    </div>
+
+    <script>
+        // ប្រើ DOMContentLoaded ដើម្បីធានាថា HTML ត្រូវបាន Load រួចរាល់
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ចាប់យក Form ដោយប្រើ ID
+            const bmiForm = document.getElementById('bmi-form');
+
+            // ត្រូវប្រាកដថា Form មាន!
+            if (bmiForm) {
+                bmiForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); 
+                    
+                    // 1. យកទិន្នន័យពី Input
+                    const heightInput = document.getElementById('height').value;
+                    const weightInput = document.getElementById('weight').value;
+                    const ageInput = document.getElementById('age').value; 
+                    
+                    // បំប្លែងទៅជាលេខ
+                    const height = parseFloat(heightInput); 
+                    const weight = parseFloat(weightInput);
+                    const age = parseInt(ageInput); 
+
+                    // 2. កំណត់ Element ដែលត្រូវបង្ហាញលទ្ធផល
+                    const bmiValueElement = document.getElementById('bmi-value');
+                    const statusTextElement = document.getElementById('status-text');
+                    const adviceTextElement = document.getElementById('advice-text');
+
+                    // ត្រួតពិនិត្យភាពត្រឹមត្រូវនៃទិន្នន័យ (Validation)
+                    if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+                        bmiValueElement.textContent = "BMI: កំហុស!";
+                        statusTextElement.textContent = "ស្ថានភាព: សូមបញ្ចូលតួលេខត្រឹមត្រូវ។";
+                        adviceTextElement.textContent = "សូមបញ្ចូលកម្ពស់ (ម៉ែត្រ) និងទម្ងន់ (គីឡូក្រាម)។";
+                        statusTextElement.style.color = '#dc3545'; // បង្ហាញជាពណ៌ក្រហម
+                        return; 
+                    }
+
+                    // 3. ដំណើរការគណនា BMI 
+                    const bmi = weight / (height * height);
+                    const roundedBmi = bmi.toFixed(1); 
+
+                    // 4. កំណត់ស្ថានភាព
+                    let status = '';
+                    let advice = '';
+                    let statusColor = '';
+
+                    if (roundedBmi < 18.5) {
+                        status = 'ក្រោមទម្ងន់ (Underweight)';
+                        advice = 'សូមពិគ្រោះជាមួយគ្រូពេទ្យ ដើម្បីបង្កើនទម្ងន់តាមរបៀបសុខភាពល្អ។';
+                        statusColor = '#ffc107'; // លឿង
+                    } else if (roundedBmi >= 18.5 && roundedBmi < 24.9) {
+                        status = 'ទម្ងន់ធម្មតា (Healthy Weight)';
+                        advice = 'ស្ថានភាពល្អ! សូមរក្សានូវទម្លាប់នៃការញ៉ាំ និងហាត់ប្រាណឲ្យបានទៀងទាត់។';
+                        statusColor = '#28a745'; // បៃតង
+                    } else if (roundedBmi >= 25 && roundedBmi < 29.9) {
+                        status = 'លើសទម្ងន់ (Overweight)';
+                        advice = 'សូមព្យាយាមកាត់បន្ថយការទទួលទានអាហារដែលមានជាតិស្ករ និងខ្លាញ់ខ្ពស់។';
+                        statusColor = '#fd7e14'; // ទឹកក្រូច
+                    } else { // BMI >= 30
+                        status = 'ធាត់ខ្លាំង (Obesity)';
+                        advice = 'កម្រិតហានិភ័យខ្ពស់។ សូមស្វែងរកការណែនាំពីអ្នកជំនាញសុខាភិបាលជាបន្ទាន់។';
+                        statusColor = '#dc3545'; // ក្រហម
+                    }
+                    
+                    // 5. បង្ហាញលទ្ធផលនៅក្នុង HTML
+                    bmiValueElement.textContent = `BMI: ${roundedBmi}`;
+                    
+                    statusTextElement.style.color = statusColor; 
+                    statusTextElement.textContent = `ស្ថានភាព: ${status}`;
+                    
+                    adviceTextElement.textContent = `ការណែនាំ: ${advice}`;
+
+                    // មុខងារបន្ថែម៖ ការណែនាំតាមអាយុ
+                    if (age > 50 && roundedBmi >= 25) {
+                        adviceTextElement.textContent += ` (ចំណាំពិសេស៖ សម្រាប់អាយុ ${age} ហានិភ័យនៃជំងឺបេះដូងអាចកើនឡើង)`;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
